@@ -6,14 +6,14 @@
 <title>تَعَلَّمْ الكَلِمَات — Learn Arabic Words (Madina Book 1)</title>
 <style>
   :root{
-    --bg-grad:radial-gradient(1200px 600px at 50% -10%,#1d3354,#0f1b2d 60%);
-    --panel:rgba(255,255,255,.03); --tab-bg:#16273f; --opt-bg:#16273f;
-    --ink:#eaf2ff; --muted:#9fb3cc; --line:rgba(255,255,255,.12);
-    --accent:#3ddc97; --accent-ink:#0f1b2d; --ar:#ffd166;
-    --card-front:linear-gradient(160deg,#1e3a5f,#16273f);
-    --card-back:linear-gradient(160deg,#1d4d3b,#16273f);
-    --correct:#1d6b4d; --correct-line:#3ddc97; --wrong:#6b2630; --wrong-line:#ff6b6b;
-    --sel:#2a3f5f;
+    --bg-grad:radial-gradient(1200px 600px at 50% -10%,#3a2a1d,#241812 60%);
+    --panel:rgba(255,255,255,.035); --tab-bg:#2f2018; --opt-bg:#2f2018;
+    --ink:#f3e9dd; --muted:#bfa78f; --line:rgba(255,225,190,.14);
+    --accent:#e0a458; --accent-ink:#241812; --ar:#f0c069;
+    --card-front:linear-gradient(160deg,#3c2b1d,#241812);
+    --card-back:linear-gradient(160deg,#42361d,#241812);
+    --correct:#3f5230; --correct-line:#9ccc5a; --wrong:#5e2a23; --wrong-line:#e0795f;
+    --sel:#3b2a1d; --bar-bg:rgba(36,24,18,.93);
   }
   [data-theme="light"]{
     --bg-grad:radial-gradient(1200px 600px at 50% -10%,#e7f1ff,#f4f7fb 60%);
@@ -23,7 +23,7 @@
     --card-front:linear-gradient(160deg,#ffffff,#eaf2ff);
     --card-back:linear-gradient(160deg,#e6f7ee,#ffffff);
     --correct:#c8f0db; --correct-line:#1f9d6b; --wrong:#fdd8db; --wrong-line:#d23b4a;
-    --sel:#fff4d6;
+    --sel:#fff4d6; --bar-bg:rgba(244,247,251,.92);
   }
   [data-theme="light"] .opt.correct,[data-theme="light"] .opt.wrong{color:#13243b}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -41,13 +41,13 @@
     width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.3rem;display:flex;align-items:center;justify-content:center;
   }
   .theme-btn:hover{border-color:var(--accent)}
-  .tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+  .tabs{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin:0 -18px 16px;padding:12px 18px 0;position:sticky;top:0;z-index:30;background:var(--bar-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
   .tab{
-    background:var(--tab-bg);border:1px solid var(--line);color:var(--ink);
-    padding:9px 16px;border-radius:999px;cursor:pointer;font-size:.95rem;transition:.15s;
+    background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);
+    padding:10px 16px;margin-bottom:-1px;border-radius:8px 8px 0 0;cursor:pointer;font-size:.95rem;transition:.15s;
   }
-  .tab:hover{border-color:var(--accent)}
-  .tab.active{background:var(--accent);color:var(--accent-ink);font-weight:700;border-color:var(--accent)}
+  .tab:hover{color:var(--ink);background:var(--sel)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;background:transparent}
   .controls{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:16px}
   select{
     background:var(--tab-bg);color:var(--ink);border:1px solid var(--line);
@@ -107,6 +107,21 @@
   .word .tl-w{color:var(--muted);font-size:.85rem}
   .word .spk{margin-top:8px;background:none;border:none;color:var(--ar);cursor:pointer;font-size:1.2rem}
   .lesson-head{grid-column:1/-1;color:var(--accent);font-weight:700;margin-top:8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+
+  #listSearch{width:100%;background:var(--tab-bg);color:var(--ink);border:1px solid var(--line);padding:11px 14px;border-radius:12px;font-size:1rem;margin-bottom:10px}
+  #listSearch:focus{outline:none;border-color:var(--accent)}
+  .list-count{color:var(--muted);font-size:.85rem;margin-bottom:10px}
+  .wordtable{width:100%;border-collapse:collapse;font-size:.95rem}
+  .wordtable th,.wordtable td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+  .wordtable th{color:var(--muted);font-weight:600;font-size:.8rem}
+  .wordtable tr.lesson-row td{color:var(--accent);font-weight:700;font-size:.95rem;background:var(--sel);border-bottom:1px solid var(--line);padding:10px 8px}
+  .wordtable td.ar-c{color:var(--ar);direction:rtl;font-size:1.4rem;font-weight:700;text-align:right;white-space:nowrap}
+  .wordtable td.en-c{font-weight:600}
+  .wordtable td.tl-c{color:var(--muted)}
+  .wordtable td.l-c{color:var(--muted);text-align:center}
+  .wordtable .row-spk{background:none;border:none;color:var(--ar);cursor:pointer;font-size:1.1rem}
+  .wordtable tr:hover td{background:var(--sel)}
+  .no-results{color:var(--muted);text-align:center;padding:20px}
   footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:22px;line-height:1.6}
 </style>
 </head>
@@ -124,6 +139,7 @@
     <button class="tab" data-mode="quiz">❓ Quiz</button>
     <button class="tab" data-mode="match">🔗 Matching</button>
     <button class="tab" data-mode="browse">📚 Browse</button>
+    <button class="tab" data-mode="list">📋 List</button>
   </div>
 
   <div class="controls">
@@ -179,6 +195,15 @@
 
   <div id="browse" class="panel hidden">
     <div class="browse-list" id="browseList"></div>
+  </div>
+
+  <div id="list" class="panel hidden">
+    <input type="text" id="listSearch" placeholder="🔍 Search Arabic, English or Tagalog…">
+    <div class="list-count" id="listCount"></div>
+    <table class="wordtable">
+      <thead><tr><th>#</th><th>Arabic</th><th>English</th><th>Tagalog</th><th>🔊</th></tr></thead>
+      <tbody id="listBody"></tbody>
+    </table>
   </div>
 
   <footer>
@@ -837,7 +862,7 @@ function speak(text){
 }
 
 /* ===== tabs ===== */
-const MODES=['flash','quiz','match','browse'];
+const MODES=['flash','quiz','match','browse','list'];
 document.querySelectorAll('.tab').forEach(t=>{
   t.onclick=()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -848,7 +873,7 @@ document.querySelectorAll('.tab').forEach(t=>{
   };
 });
 $('lessonSelect').onchange=e=>{ currentLesson=e.target.value; render(document.querySelector('.tab.active').dataset.mode); };
-function render(m){ if(m==='flash')initFlash(); if(m==='quiz')initQuiz(); if(m==='match')initMatch(); if(m==='browse')initBrowse(); }
+function render(m){ if(m==='flash')initFlash(); if(m==='quiz')initQuiz(); if(m==='match')initMatch(); if(m==='browse')initBrowse(); if(m==='list')initList(); }
 
 /* ===== FLASHCARDS ===== */
 let fcDeck=[],fcIdx=0;
@@ -951,6 +976,31 @@ function initBrowse(){
     list.appendChild(c);
   });
 }
+
+/* ===== LIST (searchable table of all words) ===== */
+function renderListRows(filter){
+  const body=$('listBody'); body.innerHTML='';
+  const q=(filter||'').trim().toLowerCase();
+  const data=pool().filter(w=> !q || w.ar.includes(filter) || w.en.toLowerCase().includes(q) || w.tl.toLowerCase().includes(q));
+  if(!data.length){ body.innerHTML='<tr><td colspan="5" class="no-results">No matches — لَا شَيْء</td></tr>'; $('listCount').textContent=''; return; }
+  let lastL=null, n=0;
+  data.forEach(w=>{
+    if(w.l!==lastL){
+      lastL=w.l; n=0;
+      const hr=document.createElement('tr'); hr.className='lesson-row';
+      hr.innerHTML=`<td colspan="5">Lesson ${w.l} — ${LESSONS[w.l]}</td>`;
+      body.appendChild(hr);
+    }
+    n++;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="l-c">${n}</td><td class="ar-c">${w.ar}</td><td class="en-c">${w.en}</td><td class="tl-c">${w.tl}</td><td><button class="row-spk">🔊</button></td>`;
+    tr.querySelector('.row-spk').onclick=()=>speak(w.ar);
+    body.appendChild(tr);
+  });
+  $('listCount').textContent=`${data.length} word${data.length>1?'s':''}`;
+}
+function initList(){ $('listSearch').value=''; renderListRows(''); }
+$('listSearch').oninput=e=>renderListRows(e.target.value);
 
 /* ===== start ===== */
 initFlash();
