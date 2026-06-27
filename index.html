@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تَعَلَّمْ الكَلِمَات — Learn Arabic Words (Madina Book 1)</title>
 <style>
+  /* King Fahd Glorious Quran Printing Complex — Uthmanic Script HAFS (renders any harakat-rich Arabic) */
+  @font-face{
+    font-family:'KFGQPC HAFS';
+    src:url('https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf') format('opentype');
+    font-display:swap;
+  }
   :root{
     --bg-grad:radial-gradient(1200px 600px at 50% -10%,#3a2a1d,#241812 60%);
     --panel:rgba(255,255,255,.035); --tab-bg:#2f2018; --opt-bg:#2f2018;
@@ -14,6 +20,7 @@
     --card-back:linear-gradient(160deg,#42361d,#241812);
     --correct:#3f5230; --correct-line:#9ccc5a; --wrong:#5e2a23; --wrong-line:#e0795f;
     --sel:#3b2a1d; --bar-bg:rgba(36,24,18,.93);
+    --arfont:'KFGQPC HAFS','Amiri','Scheherazade New','Geeza Pro','Traditional Arabic','Segoe UI',serif;
   }
   [data-theme="light"]{
     --bg-grad:radial-gradient(1200px 600px at 50% -10%,#e7f1ff,#f4f7fb 60%);
@@ -26,6 +33,8 @@
     --sel:#fff4d6; --bar-bg:rgba(244,247,251,.92);
   }
   [data-theme="light"] .opt.correct,[data-theme="light"] .opt.wrong{color:#13243b}
+  /* King Fahd Complex font applied to every Arabic element */
+  .ar-title,.ar,.q-ar,.ar-w,.match-item.ar-item,.wordtable td.ar-c,.opt-ar{font-family:var(--arfont)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
@@ -87,8 +96,20 @@
   .opt:hover{border-color:var(--accent)}
   .opt.correct{background:var(--correct);border-color:var(--correct-line)}
   .opt.wrong{background:var(--wrong);border-color:var(--wrong-line)}
-  .score{text-align:center;color:var(--muted);margin-bottom:12px}
+  .score{text-align:center;color:var(--muted);margin-bottom:4px}
   .feedback{text-align:center;margin-top:16px;font-size:1.1rem;min-height:28px}
+  .subtabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+  .subtab{background:var(--tab-bg);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;font-size:.82rem;transition:.15s}
+  .subtab:hover{border-color:var(--accent)}
+  .subtab.active{background:var(--accent);color:var(--accent-ink);font-weight:700;border-color:var(--accent)}
+  .q-scope{text-align:center;color:var(--muted);font-size:.78rem;margin-bottom:12px;opacity:.85}
+  .q-instr{text-align:center;font-size:1rem;color:var(--muted);margin-bottom:8px}
+  .q-en{text-align:center;font-size:1.3rem;font-weight:600;margin-top:6px}
+  .q-rule{text-align:center;color:var(--muted);font-size:.9rem;margin-top:10px;min-height:0;font-style:italic}
+  .opt.opt-ar{font-family:var(--arfont);direction:rtl;font-size:1.8rem;color:var(--ar);font-weight:700}
+  #qInputWrap{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin:8px 0}
+  #qInput{font-family:var(--arfont);direction:rtl;font-size:1.6rem;text-align:center;background:var(--opt-bg);color:var(--ar);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:220px}
+  #qInput:focus{outline:none;border-color:var(--accent)}
 
   .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   .match-col{display:flex;flex-direction:column;gap:10px}
@@ -173,14 +194,25 @@
   </div>
 
   <div id="quiz" class="panel hidden">
-    <div class="score" id="quizScore">Score: 0 / 0</div>
-    <div class="q-prompt">
-      <div class="q-emoji" id="qEmoji">🐎</div>
-      <div class="q-ar" id="qAr">حِصَانٌ</div>
-      <button class="speaker" id="qSpeak" title="Listen" style="margin:10px auto 0">🔊</button>
+    <div class="subtabs" id="qSubtabs">
+      <button class="subtab active" data-q="vocab">Word → meaning</button>
+      <button class="subtab" data-q="trans">Meaning → word</button>
+      <button class="subtab" data-q="blank">Fill in the blank</button>
+      <button class="subtab" data-q="subpred">Subject / Predicate</button>
+      <button class="subtab" data-q="tanwin">Tanwīn or not</button>
     </div>
+    <div class="score" id="quizScore">Score: 0 / 0</div>
+    <div class="q-scope" id="qScope"></div>
+    <div class="q-prompt">
+      <div class="q-instr" id="qInstr"></div>
+      <div class="q-ar" id="qAr"></div>
+      <div class="q-en" id="qEn"></div>
+      <button class="speaker hidden" id="qSpeak" title="Listen" style="margin:10px auto 0">🔊</button>
+    </div>
+    <div id="qInputWrap" class="hidden"><input type="text" id="qInput" placeholder="اُكْتُبِ الكَلِمَة… (type the word)"><button class="btn primary" id="qCheck">Check</button></div>
     <div class="opts" id="qOpts"></div>
     <div class="feedback" id="qFeedback"></div>
+    <div class="q-rule" id="qRule"></div>
     <div style="text-align:center;margin-top:16px"><button class="btn primary hidden" id="qNext">Next ▶</button></div>
   </div>
 
@@ -903,6 +935,8 @@ const $ = id => document.getElementById(id);
 const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
 let currentLesson = "all";
 function pool(){ return currentLesson==="all" ? WORDS : WORDS.filter(w=>w.l==currentLesson); }
+// Assessment scope = cumulative: this lesson AND all earlier lessons, never future ones.
+function scopePool(){ return currentLesson==="all" ? WORDS : WORDS.filter(w=>w.l<=+currentLesson); }
 
 /* lesson dropdown */
 (function(){
@@ -969,43 +1003,192 @@ $('fcNext').onclick=()=>{ fcIdx=(fcIdx+1)%fcDeck.length; showFlash(); };
 $('fcPrev').onclick=()=>{ fcIdx=(fcIdx-1+fcDeck.length)%fcDeck.length; showFlash(); };
 $('fcSpeak').onclick=e=>{ e.stopPropagation(); speak(fcDeck[fcIdx].ar); };
 
-/* ===== QUIZ ===== */
-let qDeck=[],qIdx=0,qScore=0,qTotal=0,qWord=null;
-function initQuiz(){ qDeck=shuffle(pool()); qIdx=0; qScore=0; qTotal=0; showQuiz(); }
-function showQuiz(){
-  $('qNext').classList.add('hidden'); $('qFeedback').textContent='';
-  const w=qDeck[qIdx]; qWord=w;
-  $('qEmoji').textContent=w.em||''; $('qEmoji').style.display=w.em?'block':'none';
-  $('qAr').textContent=w.ar;
-  $('quizScore').textContent=`Score: ${qScore} / ${qTotal}`;
-  // distractors with distinct English
-  const seen=new Set([w.en]); const others=[];
-  for(const cand of shuffle(WORDS)){ if(!seen.has(cand.en)){ seen.add(cand.en); others.push(cand); } if(others.length===3) break; }
-  const opts=shuffle([w,...others]);
-  const box=$('qOpts'); box.innerHTML='';
-  opts.forEach(o=>{
-    const b=document.createElement('button');
-    b.className='opt'; b.textContent=o.en;
-    b.onclick=()=>answerQuiz(b,o,w);
-    box.appendChild(b);
+/* ===== QUIZ (6 lesson-scoped exercise types) ===== */
+let qType='vocab', qScore=0, qTotal=0, qCur=null;
+
+/* --- Arabic helpers --- */
+const TANWIN=/[ًٌٍ]$/;                 // ـً ـٌ ـٍ at end = indefinite
+const stripTashkil=s=>s.replace(/[ً-ْٰ]/g,'').replace(/ـ/g,'');
+const isDefinite=ar=>/^(ال|الْ|الـ)/.test(ar);
+const FEM=ar=>/ة[ً-ْ]?$/.test(ar)||/اء[ً-ْ]?$/.test(ar);
+function toDef(ar){                                   // indefinite -> definite (add ال, drop tanwīn)
+  let s=ar.replace(/ً$/,'').replace(/ٌ$/,'ُ').replace(/ٍ$/,'ِ');
+  return 'ال'+s;
+}
+const NAME_RE=/\(name\)|prophet|angel|\(a name\)|\(a city\)|\(language\)|\(cologne\)/i;
+const ADJ=new Set(['heavy','light','clean','poor','sweet','sick','rich','delicious','tall','broken','open','sitting','standing','new','old','cold','near','far','hot','small','big','dirty','beautiful','closed','fast','famous','easy','hungry','thirsty','angry','full','sharp','lazy','hardworking','spacious','cheap','righteous','different','weak','illuminated','short','hard']);
+const baseEn=en=>en.toLowerCase().replace(/\([^)]*\)/g,'').split('/')[0].trim();
+// concrete indefinite singular nouns available in scope (for sentences / tanwīn)
+function nounScope(){
+  return scopePool().filter(w=> w.em && TANWIN.test(w.ar) && !isDefinite(w.ar) && !/\s/.test(w.ar)
+    && !NAME_RE.test(w.en) && !/plural|^one$|^two$|^three$|^four$|^five$|^six$|^seven$|^eight$|^nine$|^ten$|also|very/i.test(w.en)
+    && !ADJ.has(baseEn(w.en)) );
+}
+function adjScope(){ return scopePool().filter(w=> ADJ.has(baseEn(w.en)) && TANWIN.test(w.ar) && !/\s/.test(w.ar)); }
+const SAFE_SUBJ=new Set(['house','book','door','pen','shirt','bag','car','room','key','chair','notebook','shop','school','mosque','watch','bicycle','knife','cup','window','street','desk','bed']);
+function subjNounScope(){ return nounScope().filter(w=>SAFE_SUBJ.has(baseEn(w.en))); }
+
+function pickN(arr,n,exclude){ const out=[]; for(const x of shuffle(arr)){ if(exclude&&exclude(x))continue; out.push(x); if(out.length===n)break;} return out; }
+function distinctEn(arr,exclEn,n){ const seen=new Set([exclEn]); const out=[];
+  for(const c of shuffle(arr)){ if(!seen.has(c.en)){seen.add(c.en);out.push(c);} if(out.length===n)break;} return out; }
+
+/* --- which sub-modes are valid for the current scope --- */
+function modeAvailable(t){
+  const sp=scopePool();
+  if(sp.length<2) return false;
+  if(t==='vocab'||t==='trans') return sp.length>=2;
+  if(t==='blank') return nounScope().length>=1;
+  if(t==='subpred') return nounScope().length>=2;          // demonstrative+noun works from L1
+  if(t==='tanwin') return nounScope().length>=1;           // we can form both ال / indefinite
+  return false;
+}
+
+/* --- sub-tab wiring --- */
+document.querySelectorAll('#qSubtabs .subtab').forEach(b=>{
+  b.onclick=()=>{ qType=b.dataset.q; syncSubtabs(); initQuiz(); };
+});
+function syncSubtabs(){
+  document.querySelectorAll('#qSubtabs .subtab').forEach(b=>{
+    const ok=modeAvailable(b.dataset.q);
+    b.classList.toggle('active', b.dataset.q===qType);
+    b.disabled=!ok; b.style.opacity=ok?'1':'.4'; b.title=ok?'':'Not introduced in this lesson yet';
   });
 }
-function answerQuiz(btn,chosen,correct){
+
+function initQuiz(){
+  syncSubtabs();
+  if(!modeAvailable(qType)){            // fall back to first available mode
+    const f=['vocab','trans','blank','subpred','tanwin'].find(modeAvailable);
+    if(!f){ $('qScope').textContent='Pick a lesson with enough words.'; $('qInstr').textContent=''; $('qAr').textContent=''; $('qEn').textContent=''; $('qOpts').innerHTML=''; return; }
+    qType=f; syncSubtabs();
+  }
+  qScore=0; qTotal=0;
+  const ln = currentLesson==='all' ? 'all lessons (1–23)' : `Lessons 1–${currentLesson}`;
+  $('qScope').textContent=`Scope: ${ln} · ${scopePool().length} words`;
+  nextQ();
+}
+
+function nextQ(){
+  $('qNext').classList.add('hidden'); $('qFeedback').textContent=''; $('qRule').textContent='';
+  $('qOpts').innerHTML=''; $('qInputWrap').classList.add('hidden'); $('qSpeak').classList.add('hidden');
+  $('qAr').textContent=''; $('qEn').textContent=''; $('qInstr').textContent='';
+  $('quizScore').textContent=`Score: ${qScore} / ${qTotal}`;
+  qCur = ({vocab:qVocab, trans:qTrans, blank:qBlank, subpred:qSubPred, tanwin:qTanwin})[qType]();
+  // render common
+  $('qInstr').textContent=qCur.instr||'';
+  if(qCur.arHTML){ $('qAr').innerHTML=qCur.arHTML; }
+  if(qCur.en){ $('qEn').textContent=qCur.en; }
+  if(qCur.speak && qCur.speakSafe){ $('qSpeak').classList.remove('hidden'); } // hide until reveal if it would leak the answer
+  if(qCur.input){
+    $('qInputWrap').classList.remove('hidden'); $('qInput').value=''; setTimeout(()=>$('qInput').focus(),50);
+  } else {
+    const box=$('qOpts');
+    qCur.options.forEach(o=>{
+      const b=document.createElement('button');
+      b.className='opt'+(o.ar?' opt-ar':''); b.textContent=o.text;
+      b.onclick=()=>answer(b,o);
+      box.appendChild(b);
+    });
+  }
+}
+
+/* ---- generators: each returns {instr, arHTML, en, options:[{text,ok,ar}], speak, rule, input, accepted} ---- */
+function qVocab(){                                   // vocabulary_multiple_choice: Arabic -> meaning
+  const w=shuffle(scopePool())[0];
+  const opts=shuffle([{text:w.en,ok:true}, ...distinctEn(scopePool(),w.en,3).map(o=>({text:o.en,ok:false}))]);
+  return {instr:'What does this word mean?', arHTML:`<span style="font-family:var(--arfont)">${w.ar}</span>`, options:opts, speak:w.ar, speakSafe:true};
+}
+function qTrans(){                                   // translation_multiple_choice: meaning -> Arabic
+  const w=shuffle(scopePool())[0];
+  const others=distinctEn(scopePool(),w.en,3);
+  const opts=shuffle([{text:w.ar,ok:true,ar:true}, ...others.map(o=>({text:o.ar,ok:false,ar:true}))]);
+  return {instr:'Choose the correct Arabic word.', en:w.en, options:opts, speak:w.ar};
+}
+function qBlank(){                                   // fill_in_blank (type the word)
+  const w=shuffle(nounScope())[0];
+  const dem=FEM(w.ar)?'هَذِهِ':'هَذَا';
+  return {instr:'Fill in the blank — type the Arabic word.',
+    arHTML:`<span style="font-family:var(--arfont)">${dem} <u>______</u> .</span>`,
+    en:`“This is a ${w.en.toLowerCase()}.”`,
+    input:true, accepted:[stripTashkil(w.ar), stripTashkil(w.ar).replace(/^ال/,'')], answerAr:w.ar, speak:dem+' '+w.ar };
+}
+function qSubPred(){                                 // subject_predicate_completion
+  const adjs=adjScope(), subs=subjNounScope();
+  const useAdj = adjs.length>=4 && subs.length>=1 && Math.random()<0.5;
+  if(useAdj){                                        // predicate = adjective:  الـnoun  ___
+    const noun=shuffle(subs)[0], adj=shuffle(adjs)[0];
+    const opts=shuffle([{text:adj.ar,ok:true,ar:true}, ...pickN(adjs,3,x=>x.en===adj.en).map(o=>({text:o.ar,ok:false,ar:true}))]);
+    return {instr:'Choose the correct predicate (khabar).',
+      arHTML:`<span style="font-family:var(--arfont)">${toDef(noun.ar)} <u>______</u></span>`,
+      en:`“The ${noun.en.toLowerCase()} is ${adj.en.toLowerCase()}.”`, options:opts, speak:toDef(noun.ar)+' '+adj.ar,
+      rule:'A nominal sentence = mubtadaʾ (subject) + khabar (predicate).'};
+  }
+  const noun=shuffle(nounScope())[0];
+  if(Math.random()<0.5){                             // predicate = noun:  هذا ___
+    const dem=FEM(noun.ar)?'هَذِهِ':'هَذَا';
+    const opts=shuffle([{text:noun.ar,ok:true,ar:true}, ...pickN(nounScope(),3,x=>x.en===noun.en).map(o=>({text:o.ar,ok:false,ar:true}))]);
+    return {instr:'Choose the correct predicate (khabar).',
+      arHTML:`<span style="font-family:var(--arfont)">${dem} <u>______</u></span>`,
+      en:`“This is a ${noun.en.toLowerCase()}.”`, options:opts, speak:dem+' '+noun.ar,
+      rule:'Here the demonstrative is the subject and the noun is the predicate.'};
+  }
+  // subject = demonstrative:  ___ noun
+  const correct=FEM(noun.ar)?'هَذِهِ':'هَذَا';
+  const opts=shuffle(['هَذَا','هَذِهِ','ذَلِكَ','تِلْكَ'].map(d=>({text:d,ok:d===correct,ar:true})));
+  return {instr:'Choose the correct subject (mubtadaʾ).',
+    arHTML:`<span style="font-family:var(--arfont)"><u>______</u> ${noun.ar}</span>`,
+    en:`“This is a ${noun.en.toLowerCase()}.”`, options:opts, speak:correct+' '+noun.ar,
+    rule:'The demonstrative must agree with the noun in gender (هَذَا m / هَذِهِ f).'};
+}
+function qTanwin(){                                  // tanwin_choice
+  const w=shuffle(nounScope())[0];
+  const showDef = Math.random()<0.5;
+  const shown = showDef ? toDef(w.ar) : w.ar;
+  const opts=shuffle([
+    {text:'Yes — it may take tanwīn', ok:!showDef},
+    {text:'No — it should not', ok:showDef}
+  ]);
+  return {instr:'Should this word take tanwīn?',
+    arHTML:`<span style="font-family:var(--arfont)">${shown}</span>`,
+    options:opts, speak:shown, speakSafe:true,
+    rule: showDef ? 'Definite nouns with ال do not take tanwīn.' : 'Indefinite nouns without ال may take tanwīn.'};
+}
+
+function answer(btn,o){
   qTotal++;
-  document.querySelectorAll('#qOpts .opt').forEach(b=>{ b.disabled=true; if(b.textContent===correct.en) b.classList.add('correct'); });
-  if(chosen===correct){ qScore++; $('qFeedback').innerHTML='✅ أَحْسَنْت! <span style="color:var(--muted)">(Well done!)</span>'; }
-  else{ btn.classList.add('wrong'); $('qFeedback').innerHTML=`❌ ${correct.ar} = ${correct.en}`; }
+  document.querySelectorAll('#qOpts .opt').forEach(b=>b.disabled=true);
+  const okBtn=[...document.querySelectorAll('#qOpts .opt')].find(b=>{
+    const opt=qCur.options[[...document.querySelectorAll('#qOpts .opt')].indexOf(b)]; return opt&&opt.ok; });
+  if(okBtn) okBtn.classList.add('correct');
+  if(o.ok){ qScore++; $('qFeedback').innerHTML='✅ أَحْسَنْت! <span style="color:var(--muted)">(Well done!)</span>'; }
+  else { btn.classList.add('wrong'); $('qFeedback').innerHTML='❌ Not quite.'; }
+  if(qCur.rule) $('qRule').textContent='ℹ️ '+qCur.rule;
+  if(qCur.speak) $('qSpeak').classList.remove('hidden'); // safe to offer audio now the answer is shown
   $('quizScore').textContent=`Score: ${qScore} / ${qTotal}`;
   $('qNext').classList.remove('hidden');
 }
-$('qNext').onclick=()=>{ qIdx=(qIdx+1)%qDeck.length; showQuiz(); };
-$('qSpeak').onclick=()=>speak(qWord.ar);
+function checkBlank(){
+  if($('qInput').disabled) return;
+  qTotal++;
+  const val=stripTashkil($('qInput').value.trim());
+  const ok=qCur.accepted.some(a=>a===val||a.replace(/^ال/,'')===val.replace(/^ال/,''));
+  $('qInput').disabled=true; $('qCheck').disabled=true;
+  if(ok){ qScore++; $('qFeedback').innerHTML='✅ أَحْسَنْت! <span style="color:var(--muted)">(Correct!)</span>'; }
+  else { $('qFeedback').innerHTML=`❌ Correct answer: <span style="font-family:var(--arfont);color:var(--ar);font-size:1.3rem">${qCur.answerAr}</span>`; }
+  if(qCur.speak) $('qSpeak').classList.remove('hidden'); // reveal pronunciation after answering
+  $('quizScore').textContent=`Score: ${qScore} / ${qTotal}`;
+  $('qNext').classList.remove('hidden');
+}
+$('qCheck').onclick=checkBlank;
+$('qInput').addEventListener('keydown',e=>{ if(e.key==='Enter') checkBlank(); });
+$('qNext').onclick=nextQ;
+$('qSpeak').onclick=()=>{ if(qCur&&qCur.speak) speak(qCur.speak); };
 
 /* ===== MATCHING ===== */
 let mPairs=[],mSel=null,mDone=0;
 function initMatch(){
-  mPairs=shuffle(pool()).slice(0,6); mDone=0; mSel=null;
-  $('matchMsg').textContent='Tap an Arabic word, then its matching picture/meaning.';
+  mPairs=shuffle(scopePool()).slice(0,6); mDone=0; mSel=null;
+  $('matchMsg').textContent='Tap a word in Column A, then its match in Column B.';
   const left=$('matchLeft'),right=$('matchRight'); left.innerHTML=''; right.innerHTML='';
   shuffle(mPairs).forEach((w,i)=>{
     const d=document.createElement('div');
